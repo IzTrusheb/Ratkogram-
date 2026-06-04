@@ -146,6 +146,11 @@ import me.vkryl.android.animator.FactorAnimator;
 
 public class SettingsActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, ImageUpdater.ImageUpdaterDelegate, MainTabsActivity.TabFragmentDelegate, FactorAnimator.Target {
 
+    private static final String RATKO_RULES_URL = "https://telegra.ph/Pravila-polzovaniya-06-04-2";
+    private static final String RATKO_OFFER_URL = "https://telegra.ph/Usloviya-publichnoj-aferty-06-04";
+    private static final String RATKO_PRIVACY_URL = "https://telegra.ph/Politika-konfidencialnosti-06-04-52";
+    private static final String RATKO_SECURITY_URL = "https://telegra.ph/Politika-bezopasnosti-06-04";
+
     private static final int ANIMATOR_ID_SEARCH_PAGE_VISIBLE = 0;
 
     private final BoolAnimator animatorSearchPageVisible = new BoolAnimator(ANIMATOR_ID_SEARCH_PAGE_VISIBLE,
@@ -735,6 +740,13 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         items.add(SettingCell.Factory.of(23, IconBackgroundColors.PURPLE.top, IconBackgroundColors.PURPLE.bottom, R.drawable.settings_features, getString(R.string.TelegramFeatures)));
         items.add(SettingCell.Factory.of(19, IconBackgroundColors.GREEN.top, IconBackgroundColors.GREEN.bottom, R.drawable.settings_policy, getString(R.string.PrivacyPolicy)));
 
+        items.add(UItem.asShadow(null));
+        items.add(UItem.asHeader("Документы TeamRatko"));
+        items.add(SettingCell.Factory.of(25, IconBackgroundColors.BLUE.top, IconBackgroundColors.BLUE.bottom, R.drawable.settings_policy, "Правила пользования"));
+        items.add(SettingCell.Factory.of(26, IconBackgroundColors.ORANGE.top, IconBackgroundColors.ORANGE.bottom, R.drawable.settings_policy, "Условия публичной оферты"));
+        items.add(SettingCell.Factory.of(27, IconBackgroundColors.GREEN.top, IconBackgroundColors.GREEN.bottom, R.drawable.settings_policy, "Политика конфиденциальности"));
+        items.add(SettingCell.Factory.of(28, IconBackgroundColors.RED.top, IconBackgroundColors.RED.bottom, R.drawable.settings_policy, "Политика безопасности"));
+
         if (BuildVars.LOGS_ENABLED || BuildVars.DEBUG_PRIVATE_VERSION) {
             items.add(UItem.asShadow(null));
             items.add(UItem.asHeader(getString(R.string.SettingsDebug)));
@@ -859,6 +871,18 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
             }
             case 24:
                 presentFragment(new RatkoFeaturesActivity());
+                break;
+            case 25:
+                Browser.openUrl(getParentActivity(), RATKO_RULES_URL);
+                break;
+            case 26:
+                Browser.openUrl(getParentActivity(), RATKO_OFFER_URL);
+                break;
+            case 27:
+                Browser.openUrl(getParentActivity(), RATKO_PRIVACY_URL);
+                break;
+            case 28:
+                Browser.openUrl(getParentActivity(), RATKO_SECURITY_URL);
                 break;
         }
     }

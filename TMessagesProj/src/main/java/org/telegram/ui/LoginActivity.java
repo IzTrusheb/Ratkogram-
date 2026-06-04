@@ -144,6 +144,7 @@ import org.telegram.messenger.SRPHelper;
 import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.Utilities;
+import org.telegram.messenger.browser.Browser;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.RequestDelegate;
 import org.telegram.tgnet.SerializedData;
@@ -1950,6 +1951,11 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
     }
 
     private TLRPC.TL_help_termsOfService currentTermsOfService;
+
+    private static final String RATKO_RULES_URL = "https://telegra.ph/Pravila-polzovaniya-06-04-2";
+    private static final String RATKO_OFFER_URL = "https://telegra.ph/Usloviya-publichnoj-aferty-06-04";
+    private static final String RATKO_PRIVACY_URL = "https://telegra.ph/Politika-konfidencialnosti-06-04-52";
+    private static final String RATKO_SECURITY_URL = "https://telegra.ph/Politika-bezopasnosti-06-04";
 
     public class PhoneView extends SlideView implements AdapterView.OnItemSelectedListener, NotificationCenter.NotificationCenterDelegate {
         private AnimatedPhoneNumberEditText codeField;
@@ -7752,6 +7758,43 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             }
         }
 
+        public class LegalLinkSpan extends ClickableSpan {
+            private final String url;
+
+            public LegalLinkSpan(String url) {
+                this.url = url;
+            }
+
+            @Override
+            public void updateDrawState(TextPaint ds) {
+                super.updateDrawState(ds);
+                ds.setUnderlineText(false);
+            }
+
+            @Override
+            public void onClick(View widget) {
+                Browser.openUrl(getContext(), url);
+            }
+        }
+
+        private SpannableStringBuilder createRatkoLegalLinksText() {
+            SpannableStringBuilder builder = new SpannableStringBuilder("Регистрируясь, вы принимаете:\n");
+            appendLegalLink(builder, "Правила пользования", RATKO_RULES_URL);
+            builder.append(" • ");
+            appendLegalLink(builder, "Условия публичной оферты", RATKO_OFFER_URL);
+            builder.append("\n");
+            appendLegalLink(builder, "Политику конфиденциальности", RATKO_PRIVACY_URL);
+            builder.append(" • ");
+            appendLegalLink(builder, "Политику безопасности", RATKO_SECURITY_URL);
+            return builder;
+        }
+
+        private void appendLegalLink(SpannableStringBuilder builder, String text, String url) {
+            int start = builder.length();
+            builder.append(text);
+            builder.setSpan(new LegalLinkSpan(url), start, builder.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+
         private void showTermsOfService(boolean needAccept) {
             if (currentTermsOfService == null) {
                 return;
@@ -8033,16 +8076,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             privacyLayout.addView(privacyView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, 56, Gravity.LEFT | Gravity.BOTTOM, 14, 0, 70, 32));
             VerticalPositionAutoAnimator.attach(privacyView);
 
-            String str = getString("TermsOfServiceLogin", R.string.TermsOfServiceLogin);
-            SpannableStringBuilder text = new SpannableStringBuilder(str);
-            int index1 = str.indexOf('*');
-            int index2 = str.lastIndexOf('*');
-            if (index1 != -1 && index2 != -1 && index1 != index2) {
-                text.replace(index2, index2 + 1, "");
-                text.replace(index1, index1 + 1, "");
-                text.setSpan(new LinkSpan(), index1, index2 - 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            }
-            privacyView.setText(text);
+            privacyView.setText(createRatkoLegalLinksText());
         }
 
         @Override
