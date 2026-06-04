@@ -20294,10 +20294,15 @@ public class MessagesController extends BaseController implements NotificationCe
                 }
             }
             if (deletedMessagesFinal != null) {
+                boolean ratkoAntiDeleteEnabled = isRatkoAntiDeleteEnabled();
                 for (int a = 0, size = deletedMessagesFinal.size(); a < size; a++) {
                     long dialogId = deletedMessagesFinal.keyAt(a);
                     ArrayList<Integer> arrayList = deletedMessagesFinal.valueAt(a);
                     if (arrayList == null) {
+                        continue;
+                    }
+                    if (ratkoAntiDeleteEnabled) {
+                        getNotificationCenter().postNotificationName(NotificationCenter.messagesDeletedByAuthor, new ArrayList<>(arrayList), -dialogId);
                         continue;
                     }
                     getNotificationCenter().postNotificationName(NotificationCenter.messagesDeleted, arrayList, -dialogId, false);
@@ -20329,7 +20334,9 @@ public class MessagesController extends BaseController implements NotificationCe
                         }
                     }
                 }
-                getNotificationsController().removeDeletedMessagesFromNotifications(deletedMessagesFinal, false);
+                if (!ratkoAntiDeleteEnabled) {
+                    getNotificationsController().removeDeletedMessagesFromNotifications(deletedMessagesFinal, false);
+                }
             }
             if (deletedQuickRepliesMessagesFinal != null) {
                 for (int a = 0, size = deletedQuickRepliesMessagesFinal.size(); a < size; a++) {
@@ -20418,8 +20425,6 @@ public class MessagesController extends BaseController implements NotificationCe
                 long key = deletedMessages.keyAt(a);
                 ArrayList<Integer> arrayList = deletedMessages.valueAt(a);
                 if (isRatkoAntiDeleteEnabled()) {
-                    ArrayList<Integer> ids = new ArrayList<>(arrayList);
-                    AndroidUtilities.runOnUIThread(() -> getNotificationCenter().postNotificationName(NotificationCenter.messagesDeletedByAuthor, ids, -key));
                     continue;
                 }
                 getMessagesStorage().getStorageQueue().postRunnable(() -> {
