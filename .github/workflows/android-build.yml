@@ -1,0 +1,72 @@
+name: Build Ratkogram APKs
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: Build ${{ matrix.name }} APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: v8
+            abi_filters: '"arm64-v8a"'
+            artifact: Ratkogram-Aurora-Cake-v8-debug
+          - name: v7
+            abi_filters: '"armeabi-v7a"'
+            artifact: Ratkogram-Aurora-Cake-v7-debug
+          - name: universal
+            abi_filters: '"armeabi-v7a", "arm64-v8a"'
+            artifact: Ratkogram-Aurora-Cake-universal-mobile-debug
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android packages
+        run: |
+          sdkmanager --install \
+            "platforms;android-35" \
+            "build-tools;35.0.0" \
+            "cmake;3.22.1" \
+            "ndk;27.2.12479018"
+
+      - name: Cache Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Set ABI filters
+        run: |
+          perl -0pi -e 's/abiFilters\s+[^\n]+/abiFilters $ENV{ABI_FILTERS}/g' TMessagesProj/build.gradle TMessagesProj_App/build.gradle
+          grep -n "abiFilters" TMessagesProj/build.gradle TMessagesProj_App/build.gradle
+        env:
+          ABI_FILTERS: ${{ matrix.abi_filters }}
+
+      - name: Build APK
+        run: ./gradlew -p . :TMessagesProj_App:assembleAfatDebug --no-daemon --stacktrace
+
+      - name: Rename APK
+        run: |
+          mkdir -p artifacts
+          cp TMessagesProj_App/build/outputs/apk/afat/debug/app.apk "artifacts/${{ matrix.artifact }}.apk"
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: artifacts/${{ matrix.artifact }}.apk
+          if-no-files-found: error

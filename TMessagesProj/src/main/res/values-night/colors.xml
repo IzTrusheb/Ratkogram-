@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="divider">#dcdcdc</color>
+    <color name="widget_name">#ffffff</color>
+    <color name="widget_badge">#ffffff</color>
+    <color name="widget_time">#74808B</color>
+    <color name="widget_text">#7E8B98</color>
+    <color name="widget_divider">#000000</color>
+    <color name="widget_action_text">#75ADE5</color>
+    <color name="widget_edit_text">#8D949B</color>
+    <color name="ratko_features_background">#1C1C1C</color>
+    <color name="ratko_features_card_background">#2B2B2B</color>
+    <color name="ratko_features_card_title">#FFFFFF</color>
+    <color name="ratko_features_description">#AAAAAA</color>
+    <color name="ratko_features_section_title">#AAAAAA</color>
+    <color name="md3_screen_background">#1C1C1C</color>
+    <color name="md3_card_background">#2B2B2B</color>
+    <color name="md3_settings_background">@color/md3_screen_background</color>
+    <color name="md3_settings_card_background">@color/md3_card_background</color>
+    <color name="md3_settings_text_title">#FFFFFF</color>
+    <color name="md3_settings_text_description">#AAAAAA</color>
+    <color name="md3_settings_section_title">#AAAAAA</color>
+</resources>
