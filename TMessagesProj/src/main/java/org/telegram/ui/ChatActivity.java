@@ -25759,12 +25759,14 @@ public class ChatActivity extends BaseFragment implements
             MessageObject messageObject = cell.getMessageObject();
             if (messageObject != null && messageObject.getId() == messageId) {
                 markRatkoDeletedByAuthorObject(messageObject);
-                cell.setMessageObject(messageObject, cell.getCurrentMessagesGroup(), cell.isPinnedBottom(), cell.isPinnedTop(), cell.isFirstInChat(), cell.isLastInChatList());
-                cell.invalidate();
-                cell.requestLayout();
-                if (cell.getParent() instanceof View) {
-                    ((View) cell.getParent()).invalidate();
-                }
+                AndroidUtilities.runOnUIThread(() -> {
+                    cell.setMessageObject(messageObject, cell.getCurrentMessagesGroup(), cell.isPinnedBottom(), cell.isPinnedTop(), cell.isFirstInChat(), cell.isLastInChatList());
+                    cell.invalidate();
+                    cell.requestLayout();
+                    if (cell.getParent() instanceof View) {
+                        ((View) cell.getParent()).invalidate();
+                    }
+                });
                 changed = true;
             }
         }
