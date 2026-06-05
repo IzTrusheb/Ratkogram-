@@ -1234,6 +1234,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
     @SuppressLint("ClickableViewAccessibility")
     public ChatAttachAlert(Context context, final @Nullable BaseFragment parentFragment, boolean forceDarkTheme, boolean showingFromDialog, boolean needCamera, Theme.ResourcesProvider resourcesProvider) {
         super(context, false, resourcesProvider);
+        backDrawable.setAlpha(0);
         occupyNavigationBarWithoutKeyboard = true;
 
         if (parentFragment instanceof ChatActivity) {
@@ -1242,6 +1243,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
 
         iBlur3SourceColor = new BlurredBackgroundSourceColor();
         iBlur3SourceColor.setColor(getThemedColor(Theme.key_windowBackgroundWhite));
+        iBlur3SourceColor.setAlpha(0.97f);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             scrollableViewNoiseSuppressor = new DownscaleScrollableNoiseSuppressor();
             iBlur3SourceGlass = new BlurredBackgroundSourceRenderNode(null);
@@ -4468,8 +4470,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
         }
         int index = containerView.indexOfChild(currentAttachLayout);
         if (nextAttachLayout.getParent() != containerView) {
-            int nextLayoutHeight = nextAttachLayout instanceof ChatAttachAlertDocumentLayout ? LayoutHelper.WRAP_CONTENT : LayoutHelper.MATCH_PARENT;
-            containerView.addView(nextAttachLayout, nextAttachLayout == locationLayout ? index : index + 1, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, nextLayoutHeight, Gravity.BOTTOM));
+            containerView.addView(nextAttachLayout, nextAttachLayout == locationLayout ? index : index + 1, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
         }
 
         Runnable onEnd = () -> {
@@ -5864,8 +5865,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
             currentAttachLayout = layoutToSet;
             setAllowNestedScroll(true);
             if (currentAttachLayout.getParent() == null) {
-                int currentLayoutHeight = currentAttachLayout instanceof ChatAttachAlertDocumentLayout ? LayoutHelper.WRAP_CONTENT : LayoutHelper.MATCH_PARENT;
-                containerView.addView(currentAttachLayout, 0, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, currentLayoutHeight, Gravity.BOTTOM));
+                containerView.addView(currentAttachLayout, 0, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
             }
             layoutToSet.setAlpha(1.0f);
             layoutToSet.setVisibility(View.VISIBLE);

@@ -135,7 +135,7 @@ public class AboutRatkoActivity extends BaseFragment {
             developerCard.animate()
                     .alpha(1f)
                     .translationY(0)
-                    .setDuration(650)
+                    .setDuration(700)
                     .setInterpolator(new DecelerateInterpolator())
                     .start();
         });
