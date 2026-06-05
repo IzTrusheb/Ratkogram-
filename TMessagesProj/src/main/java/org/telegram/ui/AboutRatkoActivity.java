@@ -14,7 +14,6 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
-import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -131,10 +130,14 @@ public class AboutRatkoActivity extends BaseFragment {
         FrameLayout developerCard = createDeveloperCard(context, cardColor, textColor, secondaryTextColor);
         container.addView(developerCard, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 106, Gravity.FILL_HORIZONTAL));
         developerCard.post(() -> {
-            TranslateAnimation animation = new TranslateAnimation(0, 0, dp(300), 0);
-            animation.setDuration(400);
-            animation.setInterpolator(new DecelerateInterpolator());
-            developerCard.startAnimation(animation);
+            developerCard.setAlpha(0.3f);
+            developerCard.setTranslationY(AndroidUtilities.dp(300));
+            developerCard.animate()
+                    .alpha(1f)
+                    .translationY(0)
+                    .setDuration(400)
+                    .setInterpolator(new DecelerateInterpolator())
+                    .start();
         });
 
         fragmentView = root;

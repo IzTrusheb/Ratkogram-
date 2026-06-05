@@ -4468,7 +4468,8 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
         }
         int index = containerView.indexOfChild(currentAttachLayout);
         if (nextAttachLayout.getParent() != containerView) {
-            containerView.addView(nextAttachLayout, nextAttachLayout == locationLayout ? index : index + 1, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+            int nextLayoutHeight = nextAttachLayout instanceof ChatAttachAlertDocumentLayout ? LayoutHelper.WRAP_CONTENT : LayoutHelper.MATCH_PARENT;
+            containerView.addView(nextAttachLayout, nextAttachLayout == locationLayout ? index : index + 1, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, nextLayoutHeight, Gravity.BOTTOM));
         }
 
         Runnable onEnd = () -> {
@@ -5863,7 +5864,8 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
             currentAttachLayout = layoutToSet;
             setAllowNestedScroll(true);
             if (currentAttachLayout.getParent() == null) {
-                containerView.addView(currentAttachLayout, 0, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+                int currentLayoutHeight = currentAttachLayout instanceof ChatAttachAlertDocumentLayout ? LayoutHelper.WRAP_CONTENT : LayoutHelper.MATCH_PARENT;
+                containerView.addView(currentAttachLayout, 0, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, currentLayoutHeight, Gravity.BOTTOM));
             }
             layoutToSet.setAlpha(1.0f);
             layoutToSet.setVisibility(View.VISIBLE);

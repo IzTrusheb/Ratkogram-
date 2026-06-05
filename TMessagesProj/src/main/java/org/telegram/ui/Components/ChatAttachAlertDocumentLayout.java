@@ -673,6 +673,13 @@ public class ChatAttachAlertDocumentLayout extends ChatAttachAlert.AttachAlertLa
     }
 
     @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int height = MeasureSpec.getSize(heightMeasureSpec);
+        int maxHeight = Math.min(height, Math.max(AndroidUtilities.dp(420), (int) (AndroidUtilities.displaySize.y * 0.78f)));
+        super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(maxHeight, MeasureSpec.AT_MOST));
+    }
+
+    @Override
     public int getCurrentItemTop() {
         if (listView.getChildCount() <= 0) {
             return Integer.MAX_VALUE;

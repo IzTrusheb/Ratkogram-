@@ -90,7 +90,7 @@ public class AffiliateProgramFragment extends GradientHeaderActivity implements 
                 if (AffiliateProgramFragment.this.isLandscapeMode) {
                     firstViewHeight = AffiliateProgramFragment.this.statusBarHeight + actionBar.getMeasuredHeight() - AndroidUtilities.dp(16);
                 } else {
-                    int h = AndroidUtilities.dp(140) + statusBarHeight;
+                    int h = Math.max(AndroidUtilities.dp(140), particlesViewHeight) + statusBarHeight;
                     if (backgroundView.getMeasuredHeight() + AndroidUtilities.dp(24) > h) {
                         h = backgroundView.getMeasuredHeight() + AndroidUtilities.dp(24);
                     }
@@ -105,6 +105,8 @@ public class AffiliateProgramFragment extends GradientHeaderActivity implements 
         super.createView(context);
 
         aboveTitleView = new FrameLayout(context);
+        aboveTitleView.setClipChildren(false);
+        aboveTitleView.setClipToPadding(false);
         aboveTitleView.setClickable(true);
         iconTextureView = new GLIconTextureView(context, GLIconRenderer.DIALOG_STYLE, Icon3D.TYPE_DEAL);
         iconTextureView.mRenderer.colorKey1 = Theme.key_starsGradient1;
