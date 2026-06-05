@@ -81,7 +81,7 @@ public class AffiliateProgramFragment extends GradientHeaderActivity implements 
     @Override
     public View createView(Context context) {
         useFillLastLayoutManager = false;
-        particlesViewHeight = dp(32 + 190 + 16);
+        particlesViewHeight = dp(32 + 190 + 24);
 //        transactionsLayout = new StarsIntroActivity.StarsTransactionsLayout(context, currentAccount, 0, getClassGuid(), getResourceProvider());
         emptyLayout = new View(context) {
             @Override
@@ -90,7 +90,7 @@ public class AffiliateProgramFragment extends GradientHeaderActivity implements 
                 if (AffiliateProgramFragment.this.isLandscapeMode) {
                     firstViewHeight = AffiliateProgramFragment.this.statusBarHeight + actionBar.getMeasuredHeight() - AndroidUtilities.dp(16);
                 } else {
-                    int h = Math.max(AndroidUtilities.dp(140), particlesViewHeight) + statusBarHeight;
+                    int h = Math.max(AndroidUtilities.dp(140), particlesViewHeight + AndroidUtilities.dp(24)) + statusBarHeight;
                     if (backgroundView.getMeasuredHeight() + AndroidUtilities.dp(24) > h) {
                         h = backgroundView.getMeasuredHeight() + AndroidUtilities.dp(24);
                     }

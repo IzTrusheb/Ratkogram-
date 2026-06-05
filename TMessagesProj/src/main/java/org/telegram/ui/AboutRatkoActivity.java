@@ -128,14 +128,14 @@ public class AboutRatkoActivity extends BaseFragment {
         container.addView(developersTitle, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT, 0, 54, 0, 18));
 
         FrameLayout developerCard = createDeveloperCard(context, cardColor, textColor, secondaryTextColor);
+        developerCard.setAlpha(0.3f);
+        developerCard.setTranslationY(AndroidUtilities.dp(300));
         container.addView(developerCard, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 106, Gravity.FILL_HORIZONTAL));
         developerCard.post(() -> {
-            developerCard.setAlpha(0.3f);
-            developerCard.setTranslationY(AndroidUtilities.dp(300));
             developerCard.animate()
                     .alpha(1f)
                     .translationY(0)
-                    .setDuration(400)
+                    .setDuration(650)
                     .setInterpolator(new DecelerateInterpolator())
                     .start();
         });
