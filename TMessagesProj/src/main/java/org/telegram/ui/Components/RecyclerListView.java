@@ -1067,6 +1067,7 @@ public class RecyclerListView extends RecyclerView implements IBlur3Capture {
 
             blurredTagDrawable = factory.create(fastScroll, backgroundProvider);
             blurredTagDrawable.setPadding(dp(6));
+            blurredTagDrawable.setThickness(dp(4));
             blurredTagDrawable.setRadius(dp(14));
         }
 
@@ -1472,9 +1473,6 @@ public class RecyclerListView extends RecyclerView implements IBlur3Capture {
 
     @Override
     public void setBackgroundColor(int color) {
-        if (useMD3SettingsStyle) {
-            color = Theme.isCurrentThemeDark() ? 0xFF1C1C1C : 0xFFFFFFFF;
-        }
         super.setBackgroundColor(color);
     }
 
@@ -3337,15 +3335,6 @@ public class RecyclerListView extends RecyclerView implements IBlur3Capture {
         Utilities.Callback5<Canvas, RectF, Float, Float, Float> drawSectionBackground,
         boolean topPadding
     ) {
-        if (!md3SettingsStyleExplicitlySet) {
-            useMD3SettingsStyle = true;
-        }
-        if (useMD3SettingsStyle) {
-            setBackgroundColor(Theme.isCurrentThemeDark() ? 0xFF1C1C1C : 0xFFFFFFFF);
-        }
-        if (useMD3SettingsStyle) {
-            setBackgroundColor(ContextCompat.getColor(getContext(), R.color.md3_screen_background));
-        }
         setSelectorDrawableColor(getThemedColor(Theme.key_settings_listSelector));
         this.isViewTypeSection = isViewTypeSection;
         this.sectionRadius = roundRadius;
@@ -3471,7 +3460,7 @@ public class RecyclerListView extends RecyclerView implements IBlur3Capture {
         return isViewTypeSection.run(viewType);
     }
     private ArrayList<SectionsDrawer.Section> sections;
-    private boolean useMD3SettingsStyle;
+    private boolean useMD3SettingsStyle = false;
     private boolean md3SettingsStyleExplicitlySet;
 
     public void setUseMD3SettingsStyle(boolean value) {
@@ -3634,11 +3623,7 @@ public class RecyclerListView extends RecyclerView implements IBlur3Capture {
         }
     }
     public void drawBackgroundRect(Canvas canvas, RectF rect, float topRadius, float bottomRadius, float alpha) {
-        if (useMD3SettingsStyle) {
-            drawBackgroundRect(canvas, rect, topRadius, bottomRadius, alpha, resourcesProvider);
-        } else {
-            drawStockBackgroundRect(canvas, rect, topRadius, bottomRadius, alpha, resourcesProvider);
-        }
+        drawStockBackgroundRect(canvas, rect, topRadius, bottomRadius, alpha, resourcesProvider);
     }
 
     private static void drawStockBackgroundRect(Canvas canvas, RectF rect, float topRadius, float bottomRadius, float alpha, Theme.ResourcesProvider resourcesProvider) {
@@ -3726,6 +3711,10 @@ public class RecyclerListView extends RecyclerView implements IBlur3Capture {
     }
 
     public Drawable getClipBackground(View child) {
+        return getClipBackground(child, false);
+    }
+
+    public Drawable getClipBackground(View child, boolean forceRound) {
         if (child.getParent() != this || !hasSections() || !sectionsItemDecoration.isSectionItem.run(child)) return null;
 
         boolean prev, next;
@@ -3746,13 +3735,13 @@ public class RecyclerListView extends RecyclerView implements IBlur3Capture {
             child.getX() + child.getWidth(),
             Math.min(getHeight() - (applyPaddingToSections ? getPaddingBottom() : 0), bottom(child))
         );
-        if (prev && next) {
+        if (prev && next && !forceRound) {
             prev = top(child) >= rect.top;
             next = bottom(child) <= rect.bottom;
             if (prev && next) return Theme.createRoundRectDrawable(0, Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider));
         }
         final Path clipPath = new Path();
-        if (!prev && !next) {
+        if (!prev && !next || forceRound) {
             clipPath.rewind();
             clipPath.addRoundRect(rect, sectionRadius, sectionRadius, Path.Direction.CW);
         } else if (!prev) {

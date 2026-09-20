@@ -89,6 +89,10 @@
         <item name="android:hyphenationFrequency">none</item>
     </style>
 
+    <style name="EditTextNoBackgroundStyle" parent="android:Widget.EditText">
+        <item name="android:background">@null</item>
+    </style>
+
     <style name="MD3SettingsCard">
         <item name="android:background">@color/md3_card_background</item>
         <item name="android:elevation">2dp</item>

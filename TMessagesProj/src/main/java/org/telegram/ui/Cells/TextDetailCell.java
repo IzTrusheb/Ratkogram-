@@ -72,7 +72,6 @@ public class TextDetailCell extends FrameLayout {
         this.resourcesProvider = resourcesProvider;
         this.multiline = textMultiline || valueMultiline;
         if (!forceStockStyle) {
-            setBackgroundColor(Theme.isCurrentThemeDark() ? 0xFF2B2B2B : 0xFFFFFFFF);
         }
 
         textView = new SpoilersTextView(context, resourcesProvider);
@@ -301,11 +300,11 @@ public class TextDetailCell extends FrameLayout {
 
     public void updateColors() {
         textView.setLinkTextColor(processColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider)));
-        textView.setTextColor(Theme.isCurrentThemeDark() ? 0xFFFFFFFF : 0xFF000000);
+        textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
         textView.invalidate();
         valueTextView.setLinkTextColor(processColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider)));
-        valueTextView.setTextColor(Theme.isCurrentThemeDark() ? 0xFFAAAAAA : 0xFF757575);
-        rightValueTextView.setTextColor(Theme.isCurrentThemeDark() ? 0xFFAAAAAA : 0xFF757575);
+        valueTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider));
+        rightValueTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider));
         valueTextView.invalidate();
     }
 

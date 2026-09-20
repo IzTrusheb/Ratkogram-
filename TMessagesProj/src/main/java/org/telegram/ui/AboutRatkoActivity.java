@@ -41,23 +41,12 @@ public class AboutRatkoActivity extends BaseFragment {
     private static final String RATKO_USERNAME = "@OwnerRatko";
     private static final String RATKOGRAM_GITHUB_URL = "https://github.com/IzTrusheb/Ratkogram-";
 
-    private static final int LIGHT_BG = 0xFFF2F2F2;
-    private static final int DARK_BG = 0xFF1C1C1C;
-    private static final int LIGHT_CARD = 0xFFFFFFFF;
-    private static final int DARK_CARD = 0xFF2B2B2B;
-    private static final int ACCENT = 0xFF757575;
-    private static final int LIGHT_TEXT = 0xFF000000;
-    private static final int DARK_TEXT = 0xFFFFFFFF;
-    private static final int LIGHT_SECONDARY_TEXT = 0xFF757575;
-    private static final int DARK_SECONDARY_TEXT = 0xFFAAAAAA;
-
     @Override
     public View createView(Context context) {
-        boolean dark = Theme.isCurrentThemeDark();
-        int bgColor = dark ? DARK_BG : LIGHT_BG;
-        int cardColor = dark ? DARK_CARD : LIGHT_CARD;
-        int textColor = dark ? DARK_TEXT : LIGHT_TEXT;
-        int secondaryTextColor = dark ? DARK_SECONDARY_TEXT : LIGHT_SECONDARY_TEXT;
+        int bgColor = Theme.getColor(Theme.key_windowBackgroundGray);
+        int cardColor = Theme.getColor(Theme.key_windowBackgroundWhite);
+        int textColor = Theme.getColor(Theme.key_windowBackgroundWhiteBlackText);
+        int secondaryTextColor = Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2);
 
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
         actionBar.setAllowOverlayTitle(true);
@@ -89,7 +78,7 @@ public class AboutRatkoActivity extends BaseFragment {
 
         ImageView logoView = new ImageView(context);
         logoView.setImageResource(R.drawable.logo_middle);
-        logoView.setColorFilter(new PorterDuffColorFilter(ACCENT, PorterDuff.Mode.SRC_IN));
+        logoView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteGrayIcon), PorterDuff.Mode.SRC_IN));
         logoView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         container.addView(logoView, LayoutHelper.createLinear(56, 56, Gravity.CENTER_HORIZONTAL, 0, 34, 0, 34));
 
@@ -115,7 +104,7 @@ public class AboutRatkoActivity extends BaseFragment {
         githubButton.setGravity(Gravity.CENTER);
         githubButton.setSingleLine(true);
         githubButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
-        githubButton.setBackground(createRoundRect(cardColor, dp(28), Theme.multAlpha(ACCENT, dark ? 0.45f : 0.35f), dp(1)));
+        githubButton.setBackground(createRoundRect(cardColor, dp(28), Theme.multAlpha(Theme.getColor(Theme.key_windowBackgroundWhiteGrayIcon), 0.35f), dp(1)));
         githubButton.setOnClickListener(v -> Browser.openUrl(getParentActivity(), RATKOGRAM_GITHUB_URL));
         container.addView(githubButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 58, Gravity.CENTER_HORIZONTAL, 0, 34, 0, 0));
 

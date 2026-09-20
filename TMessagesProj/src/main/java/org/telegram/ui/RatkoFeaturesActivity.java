@@ -38,12 +38,11 @@ public class RatkoFeaturesActivity extends BaseFragment {
 
     @Override
     public View createView(Context context) {
-        boolean dark = Theme.isCurrentThemeDark();
-        int backgroundColor = dark ? 0xFF1C1C1C : 0xFFFFFFFF;
-        int cardColor = dark ? 0xFF2B2B2B : 0xFFFFFFFF;
-        int titleColor = dark ? 0xFFFFFFFF : 0xFF000000;
-        int descriptionColor = dark ? 0xFFAAAAAA : 0xFF757575;
-        int sectionTitleColor = dark ? 0xFFAAAAAA : 0xFF757575;
+        int backgroundColor = Theme.getColor(Theme.key_windowBackgroundGray);
+        int cardColor = Theme.getColor(Theme.key_windowBackgroundWhite);
+        int titleColor = Theme.getColor(Theme.key_windowBackgroundWhiteBlackText);
+        int descriptionColor = Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2);
+        int sectionTitleColor = Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2);
 
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
         actionBar.setAllowOverlayTitle(true);

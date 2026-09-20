@@ -26,7 +26,7 @@ public class BuildVars {
     public static boolean NO_SCOPED_STORAGE = Build.VERSION.SDK_INT <= 29;
     public static String BUILD_VERSION_STRING = BuildConfig.BUILD_VERSION_STRING;
     public static final String RATKOGRAM_NAME = "Ratkogram";
-    public static final String RATKOGRAM_CODENAME = "Aurora Cake";
+    public static final String RATKOGRAM_CODENAME = "Phantom Pulse";
     public static final String RATKOGRAM_RELEASE = RATKOGRAM_NAME + " " + RATKOGRAM_CODENAME;
 
     public static int APP_ID = 35872464;
@@ -45,8 +45,6 @@ public class BuildVars {
 
     // works only on official app ids, disable on your forks
     public static boolean SUPPORTS_PASSKEYS = true;
-
-    public static boolean USE_LEGACY_SYSTEM_INSETS = false;
 
     static {
         if (ApplicationLoader.applicationContext != null) {

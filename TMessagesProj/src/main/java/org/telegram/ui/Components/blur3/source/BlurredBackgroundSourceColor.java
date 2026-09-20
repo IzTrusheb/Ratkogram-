@@ -22,6 +22,10 @@ public class BlurredBackgroundSourceColor implements BlurredBackgroundSource {
         return paint.getColor();
     }
 
+    public void setAlpha(float alpha) {
+        paint.setAlpha((int) (alpha * 255));
+    }
+
     @Override
     public void draw(Canvas canvas, float left, float top, float right, float bottom) {
         canvas.drawRect(left, top, right, bottom, paint);
