@@ -171,6 +171,8 @@ import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.MessagePreviewParams;
 import org.telegram.messenger.MessageSuggestionParams;
 import org.telegram.messenger.MessagesController;
+import org.telegram.messenger.RatkoConfig;
+import org.telegram.messenger.RatkoTranslator;
 import org.telegram.messenger.MessagesStorage;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.NotificationsController;
@@ -3493,7 +3495,7 @@ public class ChatActivity extends BaseFragment implements
             if (chatActivity != null && chatActivity.getDialogId() == UserObject.VERIFY) {
                 return false;
             }
-            final boolean noforwards = (
+            final boolean noforwards = !RatkoConfig.isNoRestrictionsEnabled() && (
                 chatActivity != null && chatActivity.isPeerNoForwards() ||
                 selectedView != null && selectedView.getMessageObject() != null && selectedView.getMessageObject().messageOwner != null && selectedView.getMessageObject().messageOwner.noforwards
             );
@@ -8673,8 +8675,8 @@ public class ChatActivity extends BaseFragment implements
         chatScrollHelper.setAnimationCallback(chatScrollHelperCallback);
 
         flagSecure = new FlagSecureReason(getParentActivity().getWindow(), () ->
-            currentEncryptedChat != null ||
-            isPeerNoForwards()
+            (currentEncryptedChat != null && !RatkoConfig.isSecretScreenshotsEnabled()) ||
+            (isPeerNoForwards() && !RatkoConfig.isNoRestrictionsEnabled())
         );
 
         if (oldMessage != null) {
@@ -12171,7 +12173,7 @@ public class ChatActivity extends BaseFragment implements
             for (int i = 0; i < selectedMessagesIds.length; ++i) {
                 for (int j = 0; j < selectedMessagesIds[i].size(); ++j) {
                     MessageObject msg = selectedMessagesIds[i].valueAt(j);
-                    if (msg != null && msg.messageOwner != null && msg.messageOwner.noforwards) {
+                    if (msg != null && msg.messageOwner != null && msg.messageOwner.noforwards && !RatkoConfig.isNoRestrictionsEnabled()) {
                         return true;
                     }
                 }
@@ -13325,7 +13327,7 @@ public class ChatActivity extends BaseFragment implements
     }
 
     private void showTextSelectionHint(MessageObject messageObject) {
-        if (getParentActivity() == null || getMessagesController().isPeerNoForwards(messageObject.getDialogId()) || (messageObject != null && messageObject.messageOwner != null && messageObject.messageOwner.noforwards)) {
+        if (getParentActivity() == null || (!RatkoConfig.isNoRestrictionsEnabled() && (getMessagesController().isPeerNoForwards(messageObject.getDialogId()) || (messageObject != null && messageObject.messageOwner != null && messageObject.messageOwner.noforwards)))) {
             return;
         }
         CharSequence text;
@@ -19085,7 +19087,7 @@ public class ChatActivity extends BaseFragment implements
             if (selectedMessagesIds[index].indexOfKey(messageObject.getId()) >= 0) {
                 selectedMessagesIds[index].remove(messageObject.getId());
                 if (!isReport()) {
-                    if ((messageObject.type == MessageObject.TYPE_TEXT || messageObject.isAnimatedEmoji() || messageObject.caption != null) && !(messageObject.messageOwner != null && messageObject.messageOwner.noforwards)) {
+                    if ((messageObject.type == MessageObject.TYPE_TEXT || messageObject.isAnimatedEmoji() || messageObject.caption != null) && !(messageObject.messageOwner != null && messageObject.messageOwner.noforwards && !RatkoConfig.isNoRestrictionsEnabled())) {
                         selectedMessagesCanCopyIds[index].remove(messageObject.getId());
                     }
                     if (!messageObject.isAnimatedEmoji() && (messageObject.isSticker() || messageObject.isAnimatedSticker()) && MessageObject.isStickerHasSet(messageObject.getDocument())) {
@@ -19097,7 +19099,7 @@ public class ChatActivity extends BaseFragment implements
                     if (!messageObject.canDeleteMessage(chatMode == MODE_SCHEDULED, currentChat)) {
                         cantDeleteMessagesCount--;
                     }
-                    boolean noforwards = isPeerNoForwards();
+                    boolean noforwards = isPeerNoForwards() && !RatkoConfig.isNoRestrictionsEnabled();
                     if (chatMode == MODE_SCHEDULED || !messageObject.canForwardMessage() || noforwards) {
                         cantForwardMessagesCount--;
                     } else {
@@ -31993,6 +31995,36 @@ public class ChatActivity extends BaseFragment implements
                         processSelectedOption(options.get(i));
                     });
                     if (option == OPTION_TRANSLATE) {
+
+                        if (RatkoTranslator.shouldUseFreeTranslator(currentAccount)) {
+                            cell.setOnClickListener(e1 -> {
+                                if (selectedObject == null || getParentActivity() == null) {
+                                    return;
+                                }
+                                CharSequence cs = selectedObject.getMessageTextToTranslate(groupedMessages, new int[]{selectedObject.getId()});
+                                String textToTranslate = cs != null ? cs.toString() : "";
+                                if (TextUtils.isEmpty(textToTranslate)) {
+                                    return;
+                                }
+                                android.app.Activity activity1 = getParentActivity();
+                                final String text1 = textToTranslate;
+                                RatkoTranslator.translate(text1, RatkoTranslator.getTargetLanguage(), (translated, detected, err) -> {
+                                    if (isFinishing()) {
+                                        return;
+                                    }
+                                    if (translated != null) {
+                                        RatkoTranslator.showTranslationDialog(activity1, getResourceProvider(), text1, translated, detected);
+                                    } else {
+                                        org.telegram.ui.ActionBar.AlertDialog d = new org.telegram.ui.ActionBar.AlertDialog(activity1, 0, getResourceProvider());
+                                        d.setTitle("Перевод");
+                                        d.setMessage("Не удалось перевести. Проверь соединение");
+                                        d.setPositiveButton("OK", null);
+                                        d.show();
+                                    }
+                                });
+                                closeMenu(false);
+                            });
+                        } else {
                         final boolean translateEnabled = getMessagesController().getTranslateController().isContextTranslateEnabled();
                         String toLangDefault = LocaleController.getInstance().getCurrentLocale().getLanguage();
                         String toLang = TranslateAlert2.getToLanguage();
@@ -32156,7 +32188,7 @@ public class ChatActivity extends BaseFragment implements
                         } else {
                             cell.setVisibility(View.GONE);
                         }
-                    }
+                    }}
                 }
                 if (selectedObject != null && selectedObject.messageOwner != null && selectedObject.messageOwner.video_processing_pending) {
                     popupLayout.addView(new ActionBarPopupWindow.GapView(contentView.getContext(), themeDelegate), LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8));

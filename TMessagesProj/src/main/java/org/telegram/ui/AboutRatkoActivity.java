@@ -24,9 +24,11 @@ import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.R;
+import org.telegram.messenger.RatkoUpdater;
 import org.telegram.messenger.UserObject;
 import org.telegram.messenger.browser.Browser;
 import org.telegram.tgnet.TLRPC;
+import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
@@ -108,6 +110,17 @@ public class AboutRatkoActivity extends BaseFragment {
         githubButton.setOnClickListener(v -> Browser.openUrl(getParentActivity(), RATKOGRAM_GITHUB_URL));
         container.addView(githubButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 58, Gravity.CENTER_HORIZONTAL, 0, 34, 0, 0));
 
+        TextView updateButton = new TextView(context);
+        updateButton.setText("Проверить обновления");
+        updateButton.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+        updateButton.setGravity(Gravity.CENTER);
+        updateButton.setSingleLine(true);
+        updateButton.setTypeface(AndroidUtilities.bold());
+        updateButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
+        updateButton.setBackground(createRoundRect(Theme.getColor(Theme.key_featuredStickers_addButton), dp(28), Theme.multAlpha(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText), 0.0f), 0));
+        updateButton.setOnClickListener(v -> checkForUpdates());
+        container.addView(updateButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 58, Gravity.CENTER_HORIZONTAL, 0, 16, 0, 0));
+
         TextView developersTitle = new TextView(context);
         developersTitle.setText("Developers");
         developersTitle.setTextColor(textColor);
@@ -131,6 +144,49 @@ public class AboutRatkoActivity extends BaseFragment {
 
         fragmentView = root;
         return fragmentView;
+    }
+
+    private void checkForUpdates() {
+        if (getParentActivity() == null) {
+            return;
+        }
+        RatkoUpdater.checkForUpdates((info, error) -> {
+            if (getParentActivity() == null || isFinishing()) {
+                return;
+            }
+            if (info == null) {
+                String message;
+                if ("no_releases".equals(error)) {
+                    message = "Релизов пока нет — следите за GitHub";
+                } else {
+                    message = "Не удалось проверить обновления. Проверь соединение";
+                }
+                AlertDialog d = new AlertDialog(getParentActivity(), 0, getResourceProvider());
+                d.setTitle("Обновления");
+                d.setMessage(message);
+                d.setPositiveButton("OK", null);
+                d.show();
+                return;
+            }
+            String currentVersion = BuildVars.BUILD_VERSION_STRING;
+            String releaseVersion = RatkoUpdater.extractVersionFromTag(info.tagName);
+            int cmp = RatkoUpdater.compareVersions(currentVersion, releaseVersion);
+            if (cmp >= 0) {
+                AlertDialog d = new AlertDialog(getParentActivity(), 0, getResourceProvider());
+                d.setTitle("Обновления");
+                d.setMessage("У тебя последняя версия: " + currentVersion + " • " + BuildVars.RATKOGRAM_CODENAME);
+                d.setPositiveButton("OK", null);
+                d.show();
+            } else {
+                String sizeText = info.apkSize > 0 ? String.format(" (%.0f МБ)", info.apkSize / 1048576.0) : "";
+                AlertDialog d = new AlertDialog(getParentActivity(), 0, getResourceProvider());
+                d.setTitle("Доступно обновление");
+                d.setMessage("Ratkogram " + releaseVersion + sizeText + "\n\n" + (info.body != null && !info.body.isEmpty() ? info.body : "Скачать и установить?"));
+                d.setPositiveButton("Обновить", (dialog, which) -> RatkoUpdater.downloadAndInstall(this, info));
+                d.setNegativeButton("Позже", null);
+                d.show();
+            }
+        });
     }
 
     private FrameLayout createDeveloperCard(Context context, int cardColor, int textColor, int secondaryTextColor) {

@@ -90,6 +90,7 @@ import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
+import org.telegram.messenger.RatkoMonet;
 import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.SvgHelper;
 import org.telegram.messenger.UserConfig;
@@ -2217,6 +2218,20 @@ public class Theme {
     private static long[] remoteThemesHash = new long[UserConfig.MAX_ACCOUNT_COUNT];
 
     public static ArrayList<ThemeInfo> themes;
+    public static void registerExternalTheme(ThemeInfo info) {
+        if (info == null || themes == null) {
+            return;
+        }
+        themes.add(info);
+        themesDict.put(info.getKey(), info);
+    }
+    public static void unregisterExternalTheme(ThemeInfo info) {
+        if (info == null || themes == null) {
+            return;
+        }
+        themes.remove(info);
+        themesDict.remove(info.getKey());
+    }
     private static ArrayList<ThemeInfo> otherThemes;
     private static HashMap<String, ThemeInfo> themesDict;
     private static ThemeInfo currentTheme;
@@ -4052,6 +4067,8 @@ public class Theme {
                 themeConfig.edit().remove("themes").commit();
             }
         }
+
+        RatkoMonet.registerThemes();
 
         sortThemes();
 

@@ -21,6 +21,7 @@ import androidx.core.content.ContextCompat;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
+import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.BaseFragment;
@@ -35,6 +36,9 @@ public class RatkoFeaturesActivity extends BaseFragment {
     public static final String PREFS_NAME = "ratko_features";
     public static final String PREF_SHOW_USER_ID = "show_user_id";
     public static final String PREF_ANTI_DELETE = "anti_delete";
+    public static final String PREF_NO_RESTRICTIONS = "no_restrictions";
+    public static final String PREF_SECRET_SCREENSHOTS = "secret_screenshots";
+    public static final String PREF_LOCAL_PREMIUM = "local_premium";
 
     @Override
     public View createView(Context context) {
@@ -181,8 +185,54 @@ public class RatkoFeaturesActivity extends BaseFragment {
             antiDeleteSwitch.setChecked(enabled, true);
         });
 
+        addToggleCard(context, container, cardColor, titleColor, descriptionColor,
+                "Свобода копирования", "Снять запреты на копирование и пересылку",
+                PREF_NO_RESTRICTIONS);
+        addToggleCard(context, container, cardColor, titleColor, descriptionColor,
+                "Скриншоты в секретных чатах", "Разрешить скриншоты и не уведомлять собеседника",
+                PREF_SECRET_SCREENSHOTS);
+        addToggleCard(context, container, cardColor, titleColor, descriptionColor,
+                "Локальный Premium", "Разблокировать премиум-интерфейс без подписки",
+                PREF_LOCAL_PREMIUM);
+
         fragmentView = root;
         return fragmentView;
+    }
+
+    private void addToggleCard(Context context, LinearLayout container, int cardColor, int titleColor, int descriptionColor, String title, String description, String prefKey) {
+        FrameLayout card = createMd3Card(context, cardColor);
+        card.setClickable(true);
+        ScaleStateListAnimator.apply(card, 0.01f, 1.05f);
+        container.addView(card, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 88, Gravity.FILL_HORIZONTAL));
+
+        TextView titleView = new TextView(context);
+        titleView.setText(title);
+        titleView.setTextColor(titleColor);
+        titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 17);
+        titleView.setTypeface(AndroidUtilities.bold());
+        titleView.setSingleLine(true);
+        card.addView(titleView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP, 18, 19, 80, 0));
+
+        TextView descriptionView = new TextView(context);
+        descriptionView.setText(description);
+        descriptionView.setTextColor(descriptionColor);
+        descriptionView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+        descriptionView.setSingleLine(true);
+        card.addView(descriptionView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP, 18, 48, 80, 0));
+
+        Switch switchView = new Switch(context, null);
+        switchView.setColors(Theme.key_switchTrack, Theme.key_switchTrackChecked, Theme.key_windowBackgroundWhite, Theme.key_windowBackgroundWhite);
+        switchView.setChecked(getRatkoPreferences().getBoolean(prefKey, false), false);
+        card.addView(switchView, LayoutHelper.createFrame(37, 20, Gravity.RIGHT | Gravity.CENTER_VERTICAL, 0, 0, 22, 0));
+
+        card.setOnClickListener(v -> {
+            boolean enabled = !getRatkoPreferences().getBoolean(prefKey, false);
+            getRatkoPreferences().edit().putBoolean(prefKey, enabled).apply();
+            switchView.setChecked(enabled, true);
+            if (PREF_LOCAL_PREMIUM.equals(prefKey)) {
+                NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.premiumStatusChangedGlobal);
+            }
+        });
     }
 
     private FrameLayout createMd3Card(Context context, int cardColor) {
